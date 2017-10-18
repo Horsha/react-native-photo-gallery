@@ -42,6 +42,7 @@ export default class Gallery extends Component {
     showGalleryList: false,
     showCloseButton: true,
     onChangeFullscreenState: () => {},
+    animated: false,
   };
 
   static propTypes = {
@@ -60,6 +61,7 @@ export default class Gallery extends Component {
     showGalleryList: PropTypes.bool,
     showCloseButton: PropTypes.bool,
     onChangeFullscreenState: PropTypes.func,
+    animated: PropTypes.bool,
   };
 
   onScrollEnd = (e) => {
@@ -162,6 +164,7 @@ export default class Gallery extends Component {
       initialPaginationSize,
       showGalleryList,
       showCloseButton,
+      ...rest,
     } = this.props;
 
     const showLoading = !data.length;
@@ -198,8 +201,9 @@ export default class Gallery extends Component {
 
         {showGalleryList && (
           <GalleryList
-            {...this.props}
+            data={data}
             onPressImage={this.handleOnPressImage}
+            {...rest}
           />
         )}
 

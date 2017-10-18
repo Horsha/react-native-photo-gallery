@@ -12,6 +12,8 @@ import GalleryItem from './GalleryItem';
 
 const { width } = Dimensions.get('window');
 
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
+
 class GalleryList extends PureComponent {
   constructor(props) {
     super(props);
@@ -42,16 +44,25 @@ class GalleryList extends PureComponent {
   };
 
   render() {
-    const { data, imagesPerRow } = this.props;
+    const { data, imagesPerRow, animated, ...props } = this.props;
+
+    const passedProps = {
+      data,
+      renderItem: this.renderItem,
+      keyExtractor: item => item.id,
+      contentContainerStyle: styles.container,
+      numColumns: imagesPerRow,
+      ...props,
+    }
+
+    if (animated) {
+      return (
+        <AnimatedFlatList {...passedProps} />
+      );
+    }
 
     return (
-      <FlatList
-        data={data}
-        renderItem={this.renderItem}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.container}
-        numColumns={imagesPerRow}
-      />
+      <FlatList {...passedProps} />
     );
   }
 }
