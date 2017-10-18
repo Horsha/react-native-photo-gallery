@@ -25,20 +25,22 @@ class GalleryList extends PureComponent {
     };
   }
 
-  handleShowImageFullscreen = ({ index }) => (event) =>
+  handleOnPressImage = ({ index }) => (event) =>
     this.props.onPressImage(index, event);
 
   renderItem = (row) => {
     const { imageSize } = this.state;
-    const { imageMargin, imagesPerRow } = this.props;
+    const { type, imageMargin, imagesPerRow, selectedImages } = this.props;
 
     return (
       <GalleryItem
         {...row.item}
+        isSelected={selectedImages.includes(row.index)}
+        type={type}
         imageSize={imageSize}
         marginBottom={imageMargin}
         marginRight={(row.index + 1) % imagesPerRow !== 0 ? imageMargin : 0}
-        onPress={this.handleShowImageFullscreen(row)}
+        onPress={this.handleOnPressImage(row)}
       />
     );
   };

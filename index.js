@@ -33,6 +33,7 @@ export default class Gallery extends Component {
   }
 
   static defaultProps = {
+    type: 'preview',
     backgroundColor: '#000',
     data: [],
     imagesPerRow: 4,
@@ -42,10 +43,19 @@ export default class Gallery extends Component {
     showGalleryList: false,
     showCloseButton: true,
     onChangeFullscreenState: () => {},
+    onPressImage: () => {},
     animated: false,
+    renderSelectorButton: this.renderSelectorButton,
+    selectedImages: [],
   };
 
   static propTypes = {
+    type: PropTypes.oneOf([
+      'list', // Show list + preview
+      'select', // Show list with a way to select images
+      'delete', // Show list with a way to delete images
+      'preview', // Show only image preview on fullscreen
+    ]),
     backgroundColor: PropTypes.string,
     data: PropTypes.arrayOf((propValue, key) => {
       if (!propValue[key].id || !propValue[key].image) {
@@ -62,6 +72,8 @@ export default class Gallery extends Component {
     showCloseButton: PropTypes.bool,
     onChangeFullscreenState: PropTypes.func,
     animated: PropTypes.bool,
+    renderSelectorButton: PropTypes.func,
+    selectedImages: PropTypes.array,
   };
 
   onScrollEnd = (e) => {
@@ -108,7 +120,10 @@ export default class Gallery extends Component {
     return (-halfWidth) + locationX;
   };
 
-  handleOnPressImage = (index, { nativeEvent }) => {
+  handleOnPressImage = (index, event) => {
+    const { nativeEvent } = event;
+
+    this.props.onPressImage(index, event);
     this.props.onChangeFullscreenState(true);
 
     this.goTo({
@@ -149,6 +164,11 @@ export default class Gallery extends Component {
     }).start();
   };
 
+  // TODO: implement this
+  renderSelectorButton = () => {
+
+  };
+
   renderItem = (item) => (
     <Slide
       {...item}
@@ -158,11 +178,11 @@ export default class Gallery extends Component {
 
   render() {
     const {
+      type,
       backgroundColor,
       data,
       initialNumToRender,
       initialPaginationSize,
-      showGalleryList,
       showCloseButton,
       ...rest,
     } = this.props;
@@ -199,8 +219,9 @@ export default class Gallery extends Component {
       >
         {showLoading && <Loading />}
 
-        {showGalleryList && (
+        {['list', 'select', 'delete'].includes(type) && (
           <GalleryList
+            type={type}
             data={data}
             onPressImage={this.handleOnPressImage}
             {...rest}
