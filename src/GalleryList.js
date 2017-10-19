@@ -30,7 +30,13 @@ class GalleryList extends PureComponent {
 
   renderItem = (row) => {
     const { imageSize } = this.state;
-    const { type, imageMargin, imagesPerRow, selectedImages } = this.props;
+    const {
+      type,
+      imageMargin,
+      imagesPerRow,
+      selectedImages,
+      showListButton,
+    } = this.props;
 
     return (
       <GalleryItem
@@ -71,7 +77,6 @@ class GalleryList extends PureComponent {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
     flexDirection: 'column',
   },
 });

@@ -53,7 +53,7 @@ export default class Gallery extends Component {
     type: PropTypes.oneOf([
       'list', // Show list + preview
       'select', // Show list with a way to select images
-      'delete', // Show list with a way to delete images
+      'delete', // Show list with a button to delete images
       'preview', // Show only image preview on fullscreen
     ]),
     backgroundColor: PropTypes.string,
@@ -124,6 +124,11 @@ export default class Gallery extends Component {
     const { nativeEvent } = event;
 
     this.props.onPressImage(index, event);
+
+    if (this.props.type !== 'list') {
+      return;
+    }
+
     this.props.onChangeFullscreenState(true);
 
     this.goTo({
@@ -221,10 +226,10 @@ export default class Gallery extends Component {
 
         {['list', 'select', 'delete'].includes(type) && (
           <GalleryList
+            {...rest}
             type={type}
             data={data}
             onPressImage={this.handleOnPressImage}
-            {...rest}
           />
         )}
 

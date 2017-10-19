@@ -11,7 +11,7 @@ import {
 class GalleryItem extends PureComponent {
   renderContent = () => {
     const { type, isSelected } = this.props;
-
+    
     if (type === 'select') {
       return (
         <Image
@@ -20,6 +20,15 @@ class GalleryItem extends PureComponent {
             styles.buttonIcon,
             !isSelected && styles.unselectedCheck,
           ]}
+        />
+      );
+    }
+
+    if (type === 'delete') {
+      return (
+        <Image
+          source={require('./assets/close.png')}
+          style={styles.buttonIcon}
         />
       );
     }
@@ -45,6 +54,7 @@ class GalleryItem extends PureComponent {
           source={image}
           style={[styles.container, { width: imageSize, height: imageSize }]}
           imageStyle={[
+            styles.image,
             {
               marginBottom,
               marginRight,
@@ -60,8 +70,10 @@ class GalleryItem extends PureComponent {
 
 const styles = StyleSheet.create({
   container: {
-    resizeMode: 'cover',
     alignItems: 'flex-end',
+  },
+  image: {
+    resizeMode: 'cover',
   },
   buttonIcon: {
     marginHorizontal: 10,
