@@ -25,8 +25,8 @@ class GalleryList extends PureComponent {
     };
   }
 
-  handleOnPressImage = ({ index }) => (event) =>
-    this.props.onPressImage(index, event);
+  handleOnPressImage = ({ item, index }) => (event) =>
+    this.props.onPressImage({ item, index }, event);
 
   renderItem = (row) => {
     const { imageSize } = this.state;
@@ -41,7 +41,7 @@ class GalleryList extends PureComponent {
     return (
       <GalleryItem
         {...row.item}
-        isSelected={selectedImages.includes(row.index)}
+        isSelected={selectedImages.includes(row.item.id)}
         type={type}
         imageSize={imageSize}
         marginBottom={imageMargin}

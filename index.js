@@ -26,7 +26,7 @@ export default class Gallery extends Component {
   constructor(props) {
     super(props);
 
-    const animationValue = props.showGalleryList ? 0 : 1;
+    const animationValue = ['list', 'select', 'delete'].includes(props.type) ? 0 : 1;
 
     this.scale = new Animated.Value(animationValue);
     this.pagination = new Animated.Value(animationValue);
@@ -40,7 +40,6 @@ export default class Gallery extends Component {
     imageMargin: 1,
     initialNumToRender: 4,
     initialPaginationSize: 10,
-    showGalleryList: false,
     showCloseButton: true,
     onChangeFullscreenState: () => {},
     onPressImage: () => {},
@@ -120,10 +119,11 @@ export default class Gallery extends Component {
     return (-halfWidth) + locationX;
   };
 
-  handleOnPressImage = (index, event) => {
+  handleOnPressImage = (row, event) => {
+    const { index } = row;
     const { nativeEvent } = event;
 
-    this.props.onPressImage(index, event);
+    this.props.onPressImage(row, event);
 
     if (this.props.type !== 'list') {
       return;
@@ -152,10 +152,6 @@ export default class Gallery extends Component {
   };
 
   closeImage = () => {
-    if (!this.props.showGalleryList) {
-      return;
-    }
-
     this.props.onChangeFullscreenState(false);
 
     Animated.timing(this.scale, {
@@ -167,11 +163,6 @@ export default class Gallery extends Component {
       toValue: 0,
       duration: ANIMATION_DURATION / 2,
     }).start();
-  };
-
-  // TODO: implement this
-  renderSelectorButton = () => {
-
   };
 
   renderItem = (item) => (
@@ -191,6 +182,8 @@ export default class Gallery extends Component {
       showCloseButton,
       ...rest,
     } = this.props;
+
+    const showGalleryList = ['list', 'select', 'delete'].includes(type);
 
     const showLoading = !data.length;
     
@@ -224,7 +217,7 @@ export default class Gallery extends Component {
       >
         {showLoading && <Loading />}
 
-        {['list', 'select', 'delete'].includes(type) && (
+        {showGalleryList && (
           <GalleryList
             {...rest}
             type={type}
@@ -269,7 +262,7 @@ export default class Gallery extends Component {
               {
                 translateY: this.pagination.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [100, 0],
+                  outputRange: [200, 0],
                 }),
               },
             ],
