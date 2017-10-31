@@ -184,6 +184,7 @@ export default class Gallery extends Component {
     } = this.props;
 
     const showGalleryList = ['list', 'select', 'delete'].includes(type);
+    const showPagination = ['list', 'preview'].includes(type);
 
     const showLoading = !data.length;
     
@@ -251,23 +252,25 @@ export default class Gallery extends Component {
           />
         </Animated.View>
 
-        <Pagination
-          index={this.state.index}
-          data={data}
-          initialPaginationSize={initialPaginationSize}
-          goTo={this.goTo}
-          backgroundColor={backgroundColor}
-          containerStyle={{
-            transform: [
-              {
-                translateY: this.pagination.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [200, 0],
-                }),
-              },
-            ],
-          }}
-        />
+        {showPagination && (
+          <Pagination
+            index={this.state.index}
+            data={data}
+            initialPaginationSize={initialPaginationSize}
+            goTo={this.goTo}
+            backgroundColor={backgroundColor}
+            containerStyle={{
+              transform: [
+                {
+                  translateY: this.pagination.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [200, 0],
+                  }),
+                },
+              ],
+            }}
+          />
+        )}
       </View>
     );
   }
