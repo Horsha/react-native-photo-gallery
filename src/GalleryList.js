@@ -25,8 +25,8 @@ class GalleryList extends PureComponent {
     };
   }
 
-  handleOnPressImage = ({ item, index }) => (event) =>
-    this.props.onPressImage({ item, index }, event);
+  handleOnPressImage = ({ item, index }) => (event, { isImageBroken } = {}) =>
+    this.props.onPressImage({ item, index }, event, { isImageBroken });
 
   renderItem = (row) => {
     const { imageSize } = this.state;
@@ -36,6 +36,7 @@ class GalleryList extends PureComponent {
       imagesPerRow,
       selectedImages,
       showListButton,
+      onImageError,
     } = this.props;
 
     return (
@@ -47,6 +48,7 @@ class GalleryList extends PureComponent {
         marginBottom={imageMargin}
         marginRight={(row.index + 1) % imagesPerRow !== 0 ? imageMargin : 0}
         onPress={this.handleOnPressImage(row)}
+        onImageError={onImageError}
       />
     );
   };

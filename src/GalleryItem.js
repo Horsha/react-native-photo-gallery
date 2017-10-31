@@ -9,6 +9,18 @@ import {
 } from 'react-native';
 
 class GalleryItem extends PureComponent {
+  state = {
+    isImageBroken: false,
+  };
+
+  handleBrokenImage = (event) => {
+    this.props.onImageError(event);
+
+    this.setState({
+      isImageBroken: true,
+    });
+  };
+
   renderContent = () => {
     const { type, isSelected } = this.props;
     
@@ -35,6 +47,7 @@ class GalleryItem extends PureComponent {
   };
 
   render() {
+    const { isImageBroken } = this.state;
     const {
       type,
       image,
@@ -44,9 +57,39 @@ class GalleryItem extends PureComponent {
       onPress,
     } = this.props;
 
-    const Container = ['select', 'delete'].includes(type) ? 
+    const Container = ['select', 'delete'].includes(type) ?
       TouchableOpacity :
       TouchableWithoutFeedback;
+
+    if (isImageBroken) {
+      return (
+        <Container onPress={event => onPress(event, { isImageBroken })}>
+          <ImageBackground
+            source={require('./assets/broken-image.png')}
+            style={[
+              styles.container,
+              styles.brokenImageContainer,
+              {
+                width: imageSize - 1,
+                height: imageSize - 1,
+                marginBottom,
+                marginRight,
+              },
+            ]}
+            imageStyle={[
+              styles.image,
+              styles.brokenImage,
+              {
+                marginTop: imageSize / 4,
+                marginLeft: imageSize / 4,
+              },
+            ]}
+          >
+            {this.renderContent()}
+          </ImageBackground>
+        </Container>
+      )
+    }
 
     return (
       <Container onPress={onPress}>
@@ -60,6 +103,7 @@ class GalleryItem extends PureComponent {
               marginRight,
             },
           ]}
+          onError={this.handleBrokenImage}
         >
           {this.renderContent()}
         </ImageBackground>
@@ -72,6 +116,9 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'flex-end',
   },
+  brokenImageContainer: {
+    backgroundColor: 'white',
+  },
   image: {
     resizeMode: 'cover',
   },
@@ -81,6 +128,10 @@ const styles = StyleSheet.create({
   },
   unselectedCheck: {
     opacity: 0.3,
+  },
+  brokenImage: {
+    width: 40,
+    height: 50,
   },
 });
 

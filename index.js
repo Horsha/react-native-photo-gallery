@@ -41,11 +41,12 @@ export default class Gallery extends Component {
     initialNumToRender: 4,
     initialPaginationSize: 10,
     showCloseButton: true,
+    animated: false,
+    selectedImages: [],
+    renderSelectorButton: this.renderSelectorButton,
     onChangeFullscreenState: () => {},
     onPressImage: () => {},
-    animated: false,
-    renderSelectorButton: this.renderSelectorButton,
-    selectedImages: [],
+    onImageError: () => {},
   };
 
   static propTypes = {
@@ -119,13 +120,13 @@ export default class Gallery extends Component {
     return (-halfWidth) + locationX;
   };
 
-  handleOnPressImage = (row, event) => {
+  handleOnPressImage = (row, event, { isImageBroken }) => {
     const { index } = row;
     const { nativeEvent } = event;
 
-    this.props.onPressImage(row, event);
+    this.props.onPressImage(row, event, { isImageBroken });
 
-    if (this.props.type !== 'list') {
+    if (this.props.type !== 'list' || isImageBroken) {
       return;
     }
 
