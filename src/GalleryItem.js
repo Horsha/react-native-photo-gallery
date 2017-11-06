@@ -9,17 +9,8 @@ import {
 } from 'react-native';
 
 class GalleryItem extends PureComponent {
-  state = {
-    isImageBroken: false,
-  };
-
-  handleBrokenImage = (event) => {
-    this.props.onImageError(event);
-
-    this.setState({
-      isImageBroken: true,
-    });
-  };
+  handleBrokenImage = (event) =>
+    this.props.onErrorImage(event, this.props.id);
 
   renderContent = () => {
     const { type, isSelected } = this.props;
@@ -47,49 +38,20 @@ class GalleryItem extends PureComponent {
   };
 
   render() {
-    const { isImageBroken } = this.state;
     const {
       type,
-      image,
       imageSize,
       marginBottom,
       marginRight,
       onPress,
+      isImageBroken,
     } = this.props;
 
     const Container = ['select', 'delete'].includes(type) ?
       TouchableOpacity :
       TouchableWithoutFeedback;
 
-    if (isImageBroken) {
-      return (
-        <Container onPress={event => onPress(event, { isImageBroken })}>
-          <ImageBackground
-            source={require('./assets/broken-image.png')}
-            style={[
-              styles.container,
-              styles.brokenImageContainer,
-              {
-                width: imageSize - 1,
-                height: imageSize - 1,
-                marginBottom,
-                marginRight,
-              },
-            ]}
-            imageStyle={[
-              styles.image,
-              styles.brokenImage,
-              {
-                marginTop: imageSize / 4,
-                marginLeft: imageSize / 4,
-              },
-            ]}
-          >
-            {this.renderContent()}
-          </ImageBackground>
-        </Container>
-      )
-    }
+    const image = isImageBroken ? require('./assets/broken_image.png') : this.props.image;
 
     return (
       <Container onPress={onPress}>

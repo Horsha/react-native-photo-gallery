@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { Dimensions, Platform, Animated } from 'react-native';
+import { Dimensions, Platform, Animated, StyleSheet } from 'react-native';
 
 import SwiperThumb from './SwiperThumb';
 import BetterList from '../BetterList';
 
 export class Pagination extends Component {
-  constructor(props) {
-    super(props);
+  componentWillMount() {
     this.setContentInset()
   }
 
@@ -27,9 +26,20 @@ export class Pagination extends Component {
     });
   }
 
-  navigate(index) {
+  navigate = (index) => () =>
     this.props.goTo({ index });
-  }
+
+  renderRow = (item, i, index) => (
+    <SwiperThumb
+      {...item}
+      key={index}
+      data={this.props.data}
+      active={index === this.props.index}
+      navigate={this.navigate(index)}
+      index={index}
+      isImageBroken={this.props.isImageBroken(item.id)}
+    />
+  );
 
   render() {
     const {
@@ -42,16 +52,7 @@ export class Pagination extends Component {
           ref={ref => this.list = ref}
           data={this.props.data}
           horizontal={true}
-          renderRow={(item, i, index) =>
-            <SwiperThumb
-              {...item}
-              key={index}
-              data={this.props.data}
-              active={index == this.props.index}
-              navigate={this.navigate.bind(this, index)}
-              index={index}
-            />
-          }
+          renderRow={this.renderRow}
           style={[
             {
               backgroundColor: this.props.backgroundColor,
@@ -67,7 +68,7 @@ export class Pagination extends Component {
   }
 }
 
-const styles = {
+const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     bottom: 0,
@@ -79,4 +80,4 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
   }
-};
+});

@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import {
   View,
   FlatList,
@@ -14,7 +14,7 @@ const { width } = Dimensions.get('window');
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
-class GalleryList extends PureComponent {
+class GalleryList extends Component {
   constructor(props) {
     super(props);
 
@@ -23,6 +23,10 @@ class GalleryList extends PureComponent {
     this.state = {
       imageSize: width / imagesPerRow,
     };
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return nextProps.brokenImages !== this.props.brokenImages;
   }
 
   handleOnPressImage = ({ item, index }) => (event, { isImageBroken } = {}) =>
@@ -36,7 +40,8 @@ class GalleryList extends PureComponent {
       imagesPerRow,
       selectedImages,
       showListButton,
-      onImageError,
+      onErrorImage,
+      isImageBroken,
     } = this.props;
 
     return (
@@ -47,8 +52,9 @@ class GalleryList extends PureComponent {
         imageSize={imageSize}
         marginBottom={imageMargin}
         marginRight={(row.index + 1) % imagesPerRow !== 0 ? imageMargin : 0}
+        isImageBroken={isImageBroken(row.item.id)}
         onPress={this.handleOnPressImage(row)}
-        onImageError={onImageError}
+        onErrorImage={onErrorImage}
       />
     );
   };

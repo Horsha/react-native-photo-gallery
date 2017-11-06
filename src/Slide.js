@@ -7,14 +7,19 @@ import Loading from './Loading';
 const { width, height } = Dimensions.get('window');
 
 export class Slide extends PureComponent {
+  handleOnError = () =>
+    this.props.onErrorImage(this.props.item.id);
+
   render() {
     const {
       showLoading,
       item: {
-        image,
         overlay,
       },
+      isImageBroken,
     } = this.props;
+
+    const image = isImageBroken ? require('./assets/broken_image.png') : this.props.item.image;
 
     return (
       <View>
@@ -23,10 +28,11 @@ export class Slide extends PureComponent {
         <PhotoView
           source={image}
           maximumZoomScale={3}
-          zoomScale={1}
+          minimumZoomScale={1}
           androidScaleType="center"
           resizeMode="contain"
           style={styles.photoViewContainer}
+          onError={this.handleOnError}
         />
 
         {overlay}

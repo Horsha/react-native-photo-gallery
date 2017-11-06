@@ -21,6 +21,7 @@ export default class Gallery extends Component {
   state = {
     index: 0,
     pressEvent: {},
+    brokenImages: [],
   };
 
   constructor(props) {
@@ -46,7 +47,7 @@ export default class Gallery extends Component {
     renderSelectorButton: this.renderSelectorButton,
     onChangeFullscreenState: () => {},
     onPressImage: () => {},
-    onImageError: () => {},
+    onErrorImage: () => {},
   };
 
   static propTypes = {
@@ -85,15 +86,13 @@ export default class Gallery extends Component {
     }
   }
 
-  getItemLayout = (data, index) => {
-    return {
-      length: width,
-      offset: width * index,
-      index,
-    };
-  };
+  getItemLayout = (data, index) => ({
+    length: width,
+    offset: width * index,
+    index,
+  });
 
-  goTo({ index, animated = true, pressEvent = {} }, next) {
+  goTo = ({ index, animated = true, pressEvent = {} }, next) => {
     this.setState({
       index,
       pressEvent,
@@ -120,13 +119,13 @@ export default class Gallery extends Component {
     return (-halfWidth) + locationX;
   };
 
-  handleOnPressImage = (row, event, { isImageBroken }) => {
+  handleOnPressImage = (row, event) => {
     const { index } = row;
     const { nativeEvent } = event;
 
-    this.props.onPressImage(row, event, { isImageBroken });
+    this.props.onPressImage(row, event);
 
-    if (this.props.type !== 'list' || isImageBroken) {
+    if (this.props.type !== 'list') {
       return;
     }
 
@@ -166,14 +165,30 @@ export default class Gallery extends Component {
     }).start();
   };
 
-  renderItem = (item) => (
+  handleOnErrorImage = (event, id) => {
+    this.props.onErrorImage(event, id);
+
+    this.setState(({ brokenImages }) => ({
+      brokenImages: [
+        ...brokenImages,
+        id,
+      ],
+    }));
+  }
+
+  isImageBroken = id => this.state.brokenImages.includes(id);
+
+  renderItem = (row) => (
     <Slide
-      {...item}
+      {...row}
       showLoading={!this.props.data.length}
+      isImageBroken={this.isImageBroken(row.item.id)}
+      onErrorImage={this.handleOnErrorImage}
     />
   );
 
   render() {
+    const { brokenImages } = this.state;
     const {
       type,
       backgroundColor,
@@ -225,6 +240,9 @@ export default class Gallery extends Component {
             type={type}
             data={data}
             onPressImage={this.handleOnPressImage}
+            onErrorImage={this.handleOnErrorImage}
+            brokenImages={brokenImages}
+            isImageBroken={this.isImageBroken}
           />
         )}
 
@@ -260,6 +278,8 @@ export default class Gallery extends Component {
             initialPaginationSize={initialPaginationSize}
             goTo={this.goTo}
             backgroundColor={backgroundColor}
+            brokenImages={brokenImages}
+            isImageBroken={this.isImageBroken}
             containerStyle={{
               transform: [
                 {
