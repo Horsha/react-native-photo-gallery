@@ -26,7 +26,10 @@ class GalleryList extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    return nextProps.brokenImages !== this.props.brokenImages;
+    return (
+      (nextProps.brokenImages !== this.props.brokenImages) ||
+      (nextProps.data !== this.props.data)
+    );
   }
 
   handleOnPressImage = ({ item, index }) => (event, { isImageBroken } = {}) =>

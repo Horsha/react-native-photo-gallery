@@ -17,7 +17,7 @@ import Loading from './src/Loading';
 const { width, height } = Dimensions.get('window');
 const ANIMATION_DURATION = 600;
 
-export default class Gallery extends Component {
+class Gallery extends Component {
   state = {
     index: 0,
     pressEvent: {},
@@ -310,3 +310,5 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
 });
+
+export default Gallery;
