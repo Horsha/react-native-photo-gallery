@@ -48,6 +48,7 @@ class Gallery extends Component {
     onChangeFullscreenState: () => {},
     onPressImage: () => {},
     onErrorImage: () => {},
+    onLongPressImage: () => {},
   };
 
   static propTypes = {
@@ -75,6 +76,7 @@ class Gallery extends Component {
     animated: PropTypes.bool,
     renderSelectorButton: PropTypes.func,
     selectedImages: PropTypes.array,
+    onLongPressImage: PropTypes.func,
   };
 
   onScrollEnd = (e) => {

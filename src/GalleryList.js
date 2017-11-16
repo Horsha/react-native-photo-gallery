@@ -28,6 +28,7 @@ class GalleryList extends Component {
   shouldComponentUpdate(nextProps) {
     return (
       (nextProps.brokenImages !== this.props.brokenImages) ||
+      (nextProps.type !== this.props.type) ||
       (nextProps.data !== this.props.data)
     );
   }
@@ -45,6 +46,7 @@ class GalleryList extends Component {
       showListButton,
       onErrorImage,
       isImageBroken,
+      onLongPressImage,
     } = this.props;
 
     return (
@@ -57,6 +59,7 @@ class GalleryList extends Component {
         marginRight={(row.index + 1) % imagesPerRow !== 0 ? imageMargin : 0}
         isImageBroken={isImageBroken(row.item.id)}
         onPress={this.handleOnPressImage(row)}
+        onLongPress={onLongPressImage}
         onErrorImage={onErrorImage}
       />
     );

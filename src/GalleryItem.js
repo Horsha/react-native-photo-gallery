@@ -13,8 +13,8 @@ class GalleryItem extends PureComponent {
     this.props.onErrorImage(event, this.props.id);
 
   renderContent = () => {
-    const { type, isSelected } = this.props;
-    
+    const { type, isSelected, allowDelete } = this.props;
+
     if (type === 'select') {
       return (
         <Image
@@ -27,7 +27,7 @@ class GalleryItem extends PureComponent {
       );
     }
 
-    if (type === 'delete') {
+    if (type === 'delete' && allowDelete) {
       return (
         <Image
           source={require('./assets/close.png')}
@@ -43,8 +43,9 @@ class GalleryItem extends PureComponent {
       imageSize,
       marginBottom,
       marginRight,
-      onPress,
       isImageBroken,
+      onPress,
+      onLongPress,
     } = this.props;
 
     const Container = ['select', 'delete'].includes(type) ?
@@ -54,7 +55,10 @@ class GalleryItem extends PureComponent {
     const image = isImageBroken ? require('./assets/broken_image.png') : this.props.image;
 
     return (
-      <Container onPress={onPress}>
+      <Container
+        onPress={onPress}
+        onLongPress={onLongPress}
+      >
         <ImageBackground
           source={image}
           style={[styles.container, { width: imageSize, height: imageSize }]}
