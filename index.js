@@ -6,6 +6,7 @@ import {
   Modal,
   Image,
   TouchableWithoutFeedback,
+  Platform,
   StyleSheet,
 } from 'react-native';
 import React, { Component } from 'react';
@@ -17,11 +18,18 @@ import Loading from './src/Loading';
 const { width, height } = Dimensions.get('window');
 const ANIMATION_DURATION = 600;
 
-class Gallery extends Component {
+const APPBAR_HEIGHT = Platform.OS === 'ios' ? 43 : 56;
+const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : 0;
+const NAVIGATIONBAR_HEIGHT = APPBAR_HEIGHT + STATUSBAR_HEIGHT;
+
+export default class Gallery extends Component {
   state = {
     index: 0,
     pressEvent: {},
     brokenImages: [],
+    swiperLoaded: false,
+    shouldGoToIndex: null,
+    shouldShowModal: false,
   };
 
   constructor(props) {
@@ -43,12 +51,12 @@ class Gallery extends Component {
     initialPaginationSize: 10,
     showCloseButton: true,
     animated: false,
+    useModal: false,
     selectedImages: [],
     renderSelectorButton: this.renderSelectorButton,
     onChangeFullscreenState: () => {},
     onPressImage: () => {},
     onErrorImage: () => {},
-    onLongPressImage: () => {},
   };
 
   static propTypes = {
@@ -74,9 +82,9 @@ class Gallery extends Component {
     showCloseButton: PropTypes.bool,
     onChangeFullscreenState: PropTypes.func,
     animated: PropTypes.bool,
+    useModal: PropTypes.bool,
     renderSelectorButton: PropTypes.func,
     selectedImages: PropTypes.array,
-    onLongPressImage: PropTypes.func,
   };
 
   onScrollEnd = (e) => {
@@ -88,31 +96,54 @@ class Gallery extends Component {
     }
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.shouldGoToIndex !== null && this.state.swiperLoaded && prevState.swiperLoaded && this.props.useModal) {
+      return this.goTo({
+        index: this.state.shouldGoToIndex,
+        shouldGoToIndex: null,
+      });
+    }
+  }
+
+  handleOnListLayout = () =>
+    this.setState({
+      swiperLoaded: true,
+    });
+
   getItemLayout = (data, index) => ({
     length: width,
     offset: width * index,
     index,
   });
 
-  goTo = ({ index, animated = true, pressEvent = {} }, next) => {
+  goTo = ({ index, animated = true, pressEvent = {}, ...rest }, next) => {
     this.setState({
+      ...rest,
       index,
       pressEvent,
       visible: true,
     }, next);
 
-    this.swiper.scrollToIndex({ index, animated });
-  }
+    if (this.swiper) {
+      return this.swiper.scrollToIndex({ index, animated });
+    }
+
+    if (this.props.useModal) {
+      return this.setState({
+        shouldGoToIndex: index,
+      });
+    }
+  };
 
   getPosition = (type) => {
-    const { size } = this.props;
+    const { size, useModal } = this.props;
 
     const halfWidth = width / 2;
     const halfHeight = height / 2;
 
     if (type === 'top') {
       const { locationY } = this.state.pressEvent;
-  
+
       return (-halfWidth - 200) + locationY;
     }
 
@@ -132,6 +163,12 @@ class Gallery extends Component {
     }
 
     this.props.onChangeFullscreenState(true);
+
+    if (this.props.useModal) {
+      this.setState({
+        shouldShowModal: true,
+      });
+    }
 
     this.goTo({
       index,
@@ -156,6 +193,14 @@ class Gallery extends Component {
   closeImage = () => {
     this.props.onChangeFullscreenState(false);
 
+    if (this.props.useModal) {
+      setTimeout(() =>
+        this.setState({
+          shouldShowModal: false,
+          swiperLoaded: false,
+        }), ANIMATION_DURATION / 3);
+    }
+    
     Animated.timing(this.scale, {
       toValue: 0,
       duration: ANIMATION_DURATION / 2,
@@ -189,7 +234,7 @@ class Gallery extends Component {
     />
   );
 
-  render() {
+  renderContent = (showGalleryList, showPagination) => {
     const { brokenImages } = this.state;
     const {
       type,
@@ -198,19 +243,15 @@ class Gallery extends Component {
       initialNumToRender,
       initialPaginationSize,
       showCloseButton,
+      useModal,
       ...rest,
     } = this.props;
 
-    const showGalleryList = ['list', 'select', 'delete'].includes(type);
-    const showPagination = ['list', 'preview'].includes(type);
-
-    const showLoading = !data.length;
-    
     const listContainerStyle = {
       ...StyleSheet.absoluteFillObject,
       backgroundColor,
       position: 'absolute',
-      top: this.scale.interpolate({
+      top: useModal ? NAVIGATIONBAR_HEIGHT : this.scale.interpolate({
         inputRange: [0, 1],
         outputRange: [this.getPosition('top'), 0],
       }),
@@ -230,25 +271,11 @@ class Gallery extends Component {
     };
 
     return (
-      <View
-        orientation={this.state.orientation}
-        style={styles.container}
-      >
-        {showLoading && <Loading />}
-
-        {showGalleryList && (
-          <GalleryList
-            {...rest}
-            type={type}
-            data={data}
-            onPressImage={this.handleOnPressImage}
-            onErrorImage={this.handleOnErrorImage}
-            brokenImages={brokenImages}
-            isImageBroken={this.isImageBroken}
-          />
-        )}
-
-        <Animated.View style={listContainerStyle}>
+      [
+        <Animated.View
+          key="list"
+          style={listContainerStyle}
+        >
           {showCloseButton && showGalleryList && (
             <View style={styles.closeButtonContainer}>
               <TouchableWithoutFeedback onPress={this.closeImage}>
@@ -261,9 +288,10 @@ class Gallery extends Component {
           )}
 
           <FlatList
-            data={data}
-            initialNumToRender={initialNumToRender}
             ref={ref => this.swiper = ref}
+            data={data}
+            onLayout={this.handleOnListLayout}
+            initialNumToRender={initialNumToRender}
             onMomentumScrollEnd={this.onScrollEnd}
             getItemLayout={this.getItemLayout}
             renderItem={this.renderItem}
@@ -271,10 +299,10 @@ class Gallery extends Component {
             pagingEnabled={true}
             horizontal={true}
           />
-        </Animated.View>
-
-        {showPagination && (
+        </Animated.View>,
+        showPagination && (
           <Pagination
+            key="pagination"
             index={this.state.index}
             data={data}
             initialPaginationSize={initialPaginationSize}
@@ -293,7 +321,57 @@ class Gallery extends Component {
               ],
             }}
           />
+        )
+      ]
+    );
+  }
+
+  render() {
+    const { brokenImages, shouldShowModal } = this.state;
+    const {
+      type,
+      backgroundColor,
+      data,
+      initialNumToRender,
+      initialPaginationSize,
+      showCloseButton,
+      useModal,
+      ...rest,
+    } = this.props;
+
+    const showGalleryList = ['list', 'select', 'delete'].includes(type);
+    const showPagination = ['list', 'preview'].includes(type);
+
+    const showLoading = !data.length;
+    
+    return (
+      <View
+        orientation={this.state.orientation}
+        style={styles.container}
+      >
+        {showLoading && <Loading />}
+
+        {showGalleryList && (
+          <GalleryList
+            {...rest}
+            type={type}
+            data={data}
+            onPressImage={this.handleOnPressImage}
+            onErrorImage={this.handleOnErrorImage}
+            brokenImages={brokenImages}
+            isImageBroken={this.isImageBroken}
+          />
         )}
+
+        {useModal ? (
+          <Modal
+            animationType="fade"
+            visible={shouldShowModal}
+            transparent={true}
+          >
+            {this.renderContent(showGalleryList, showPagination)}
+          </Modal>
+        ) : this.renderContent(showGalleryList, showPagination)}
       </View>
     );
   }
@@ -312,5 +390,3 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
 });
-
-export default Gallery;
