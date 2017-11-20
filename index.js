@@ -57,6 +57,7 @@ export default class Gallery extends Component {
     onChangeFullscreenState: () => {},
     onPressImage: () => {},
     onErrorImage: () => {},
+    onLongPressImage: () => {},
   };
 
   static propTypes = {
@@ -84,6 +85,7 @@ export default class Gallery extends Component {
     animated: PropTypes.bool,
     useModal: PropTypes.bool,
     renderSelectorButton: PropTypes.func,
+    onLongPressImage: PropTypes.func,
     selectedImages: PropTypes.array,
   };
 
