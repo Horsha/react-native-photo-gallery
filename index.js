@@ -50,6 +50,7 @@ export default class Gallery extends Component {
     imageMargin: 1,
     initialNumToRender: 4,
     initialPaginationSize: 10,
+    imagesNotShowing: 0,
     showCloseButton: true,
     animated: false,
     useModal: false,
@@ -65,7 +66,7 @@ export default class Gallery extends Component {
   static propTypes = {
     type: PropTypes.oneOf([
       'list', // Show list + preview
-      'shortut',
+      'shortcut',
       'select', // Show list with a way to select images
       'delete', // Show list with a button to delete images
       'preview', // Show only image preview on fullscreen
@@ -82,6 +83,7 @@ export default class Gallery extends Component {
     imageMargin: PropTypes.number,
     initialNumToRender: PropTypes.number,
     initialPaginationSize: PropTypes.number,
+    imagesNotShowing: PropTypes.number,
     showGalleryList: PropTypes.bool,
     showCloseButton: PropTypes.bool,
     onChangeFullscreenState: PropTypes.func,
@@ -351,6 +353,7 @@ export default class Gallery extends Component {
       initialPaginationSize,
       showCloseButton,
       useModal,
+      imagesNotShowing,
       ...rest,
     } = this.props;
 
@@ -388,7 +391,7 @@ export default class Gallery extends Component {
               },
             }))}
             onPressImage={this.handleOnPressImageShortcut}
-            numberImagesToShow={10}
+            numberImagesToShow={imagesNotShowing}
           />
         )}
 
