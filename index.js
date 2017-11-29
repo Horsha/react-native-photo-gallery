@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import PhotoGrid from 'react-native-thumbnail-grid';
 
 import { Pagination, Slide, GalleryList } from './src';
 import Loading from './src/Loading';
@@ -58,11 +59,13 @@ export default class Gallery extends Component {
     onPressImage: () => {},
     onErrorImage: () => {},
     onLongPressImage: () => {},
+    onPressLastShortcutImage: () => {},
   };
 
   static propTypes = {
     type: PropTypes.oneOf([
       'list', // Show list + preview
+      'shortut',
       'select', // Show list with a way to select images
       'delete', // Show list with a button to delete images
       'preview', // Show only image preview on fullscreen
@@ -87,6 +90,7 @@ export default class Gallery extends Component {
     renderSelectorButton: PropTypes.func,
     onLongPressImage: PropTypes.func,
     selectedImages: PropTypes.array,
+    onPressLastShortcutImage: PropTypes.func,
   };
 
   onScrollEnd = (e) => {
@@ -100,6 +104,7 @@ export default class Gallery extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.shouldGoToIndex !== null && this.state.swiperLoaded && prevState.swiperLoaded && this.props.useModal) {
+      console.log('should go to', this.state.shouldGoToIndex)
       return this.goTo({
         index: this.state.shouldGoToIndex,
         shouldGoToIndex: null,
@@ -160,7 +165,7 @@ export default class Gallery extends Component {
 
     this.props.onPressImage(row, event);
 
-    if (this.props.type !== 'list') {
+    if (!['list', 'shortcut'].includes(this.props.type)) {
       return;
     }
 
@@ -190,6 +195,14 @@ export default class Gallery extends Component {
         duration: ANIMATION_DURATION - 200,
       }).start();
     });
+  };
+
+  handleOnPressImageShortcut = (event, { row }, { isLastImage }) => {
+    if (!isLastImage) {
+      return this.handleOnPressImage(row, event);
+    }
+
+    this.props.onPressLastShortcutImage(event, row);
   };
 
   closeImage = () => {
@@ -236,7 +249,7 @@ export default class Gallery extends Component {
     />
   );
 
-  renderContent = (showGalleryList, showPagination) => {
+  renderContent = (showGalleryList, showPagination, showShortcutList) => {
     const { brokenImages } = this.state;
     const {
       type,
@@ -278,7 +291,7 @@ export default class Gallery extends Component {
           key="list"
           style={listContainerStyle}
         >
-          {showCloseButton && showGalleryList && (
+          {showCloseButton && (showGalleryList || showShortcutList) && (
             <View style={styles.closeButtonContainer}>
               <TouchableWithoutFeedback onPress={this.closeImage}>
                 <Image
@@ -342,10 +355,11 @@ export default class Gallery extends Component {
     } = this.props;
 
     const showGalleryList = ['list', 'select', 'delete'].includes(type);
-    const showPagination = ['list', 'preview'].includes(type);
+    const showPagination = ['list', 'preview', 'shortcut'].includes(type);
+    const showShortcutList = type === 'shortcut';
 
     const showLoading = !data.length;
-    
+
     return (
       <View
         orientation={this.state.orientation}
@@ -365,15 +379,28 @@ export default class Gallery extends Component {
           />
         )}
 
+        {showShortcutList && (
+          <PhotoGrid
+            source={data.map(({ image }, index) => ({
+              uri: image.uri,
+              row: {
+                index,
+              },
+            }))}
+            onPressImage={this.handleOnPressImageShortcut}
+            numberImagesToShow={10}
+          />
+        )}
+
         {useModal ? (
           <Modal
             animationType="fade"
             visible={shouldShowModal}
             transparent={true}
           >
-            {this.renderContent(showGalleryList, showPagination)}
+            {this.renderContent(showGalleryList, showPagination, showShortcutList)}
           </Modal>
-        ) : this.renderContent(showGalleryList, showPagination)}
+        ) : this.renderContent(showGalleryList, showPagination, showShortcutList)}
       </View>
     );
   }
