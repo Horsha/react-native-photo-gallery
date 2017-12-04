@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     height: 64,
     flex: 1,
+    width: '100%',
   },
   subContainer: {
     flexDirection: 'row',
