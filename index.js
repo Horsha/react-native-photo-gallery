@@ -106,7 +106,6 @@ export default class Gallery extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.shouldGoToIndex !== null && this.state.swiperLoaded && prevState.swiperLoaded && this.props.useModal) {
-      console.log('should go to', this.state.shouldGoToIndex)
       return this.goTo({
         index: this.state.shouldGoToIndex,
         shouldGoToIndex: null,
@@ -268,14 +267,15 @@ export default class Gallery extends Component {
       ...StyleSheet.absoluteFillObject,
       backgroundColor,
       position: 'absolute',
-      top: useModal ? NAVIGATIONBAR_HEIGHT : this.scale.interpolate({
-        inputRange: [0, 1],
-        outputRange: [this.getPosition('top'), 0],
-      }),
-      left: this.scale.interpolate({
-        inputRange: [0, 1],
-        outputRange: [this.getPosition('left'), 0],
-      }),
+      top: useModal ? NAVIGATIONBAR_HEIGHT : 0,
+      // top: useModal ? NAVIGATIONBAR_HEIGHT : this.scale.interpolate({
+      //   inputRange: [0, 1],
+      //   outputRange: [this.getPosition('top'), 0],
+      // }),
+      // left: this.scale.interpolate({
+      //   inputRange: [0, 1],
+      //   outputRange: [this.getPosition('left'), 0],
+      // }),
       opacity: this.scale,
       transform: [
         {
