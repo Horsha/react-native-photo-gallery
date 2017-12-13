@@ -23,7 +23,7 @@
   "license": "MIT",
   "dependencies": {
     "prop-types": "^15.5.10",
-    "react-native-photo-view": "1.2.0",
+    "react-native-photo-view": "1.5.2",
     "react-native-thumbnail-grid": "lucasbento/react-native-photo-grid#0dba5de"
   }
 }
