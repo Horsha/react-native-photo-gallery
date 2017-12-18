@@ -19,9 +19,7 @@ import Loading from './src/Loading';
 const { width, height } = Dimensions.get('window');
 const ANIMATION_DURATION = 600;
 
-const APPBAR_HEIGHT = Platform.OS === 'ios' ? 43 : 56;
-const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : 0;
-const NAVIGATIONBAR_HEIGHT = APPBAR_HEIGHT + STATUSBAR_HEIGHT;
+const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : 24;
 
 export default class Gallery extends Component {
   state = {
@@ -104,15 +102,6 @@ export default class Gallery extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.shouldGoToIndex !== null && this.state.swiperLoaded && prevState.swiperLoaded && this.props.useModal) {
-      return this.goTo({
-        index: this.state.shouldGoToIndex,
-        shouldGoToIndex: null,
-      });
-    }
-  }
-
   handleOnListLayout = () =>
     this.setState({
       swiperLoaded: true,
@@ -124,24 +113,17 @@ export default class Gallery extends Component {
     index,
   });
 
-  goTo = ({ index, animated = true, pressEvent = {}, ...rest }, next) => {
+  goTo = ({ index, animated = true, pressEvent = {}, ...rest }, next) =>
     this.setState({
       ...rest,
       index,
       pressEvent,
       visible: true,
-    }, next);
+    }, () => {
+      next();
 
-    if (this.swiper) {
-      return this.swiper.scrollToIndex({ index, animated });
-    }
-
-    if (this.props.useModal) {
-      return this.setState({
-        shouldGoToIndex: index,
-      });
-    }
-  };
+      return setTimeout(() => this.swiper.scrollToIndex({ index, animated }), 0);
+    });
 
   getPosition = (type) => {
     const { size, useModal } = this.props;
@@ -161,8 +143,7 @@ export default class Gallery extends Component {
   };
 
   handleOnPressImage = (row, event) => {
-    const { index } = row;
-    const { nativeEvent } = event;
+    const { pageY, pageX } = event.nativeEvent;
 
     this.props.onPressImage(row, event);
 
@@ -173,18 +154,21 @@ export default class Gallery extends Component {
     this.props.onChangeFullscreenState(true);
 
     if (this.props.useModal) {
-      this.setState({
-        shouldShowModal: true,
-      });
+      return this.handleGoToOnPressImage(row, { pageY, pageX }, true);
     }
 
+    return this.handleGoToOnPressImage(row, { pageY, pageX });
+  };
+
+  handleGoToOnPressImage = ({ index }, { pageY, pageX }, shouldShowModal = false) =>
     this.goTo({
       index,
       animated: false,
       pressEvent: {
-        locationY: nativeEvent.pageY,
-        locationX: nativeEvent.pageX,
+        locationY: pageY,
+        locationX: pageX,
       },
+      shouldShowModal,
     }, () => {
       Animated.spring(this.scale, {
         toValue: 1,
@@ -196,7 +180,6 @@ export default class Gallery extends Component {
         duration: ANIMATION_DURATION - 200,
       }).start();
     });
-  };
 
   handleOnPressImageShortcut = (event, { row }, { isLastImage }) => {
     if (!isLastImage) {
@@ -267,15 +250,8 @@ export default class Gallery extends Component {
       ...StyleSheet.absoluteFillObject,
       backgroundColor,
       position: 'absolute',
-      top: useModal ? NAVIGATIONBAR_HEIGHT : 0,
-      // top: useModal ? NAVIGATIONBAR_HEIGHT : this.scale.interpolate({
-      //   inputRange: [0, 1],
-      //   outputRange: [this.getPosition('top'), 0],
-      // }),
-      // left: this.scale.interpolate({
-      //   inputRange: [0, 1],
-      //   outputRange: [this.getPosition('left'), 0],
-      // }),
+      top: 0,
+      paddingTop: useModal ? STATUSBAR_HEIGHT : 0,
       opacity: this.scale,
       transform: [
         {
