@@ -66,15 +66,19 @@ class GalleryList extends Component {
   };
 
   render() {
-    const { data, imagesPerRow, animated, ...props } = this.props;
+    const { data, imagesPerRow, animated, horizontal, ...props } = this.props;
 
     const passedProps = {
       data,
       renderItem: this.renderItem,
       keyExtractor: item => item.id,
       contentContainerStyle: styles.container,
-      numColumns: imagesPerRow,
+      horizontal,
       ...props,
+    }
+
+    if (!horizontal) {
+      passedProps.numColumns = imagesPerRow
     }
 
     if (animated) {
@@ -91,7 +95,7 @@ class GalleryList extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'column',
+    flexDirection: 'row',
   },
 });
 
