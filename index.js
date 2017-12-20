@@ -270,14 +270,14 @@ export default class Gallery extends Component {
           style={listContainerStyle}
         >
           {showCloseButton && (showGalleryList || showShortcutList) && (
-            <View style={styles.closeButtonContainer}>
-              <TouchableWithoutFeedback onPress={this.closeImage}>
+            <TouchableWithoutFeedback onPress={this.closeImage}>
+              <View style={styles.closeButtonContainer}>
                 <Image
                   source={require('./src/assets/close.png')}
                   style={styles.closeImage}
                 />
-              </TouchableWithoutFeedback>
-            </View>
+              </View>
+            </TouchableWithoutFeedback>
           )}
 
           <FlatList
@@ -390,8 +390,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   closeButtonContainer: {
-    width: '100%',
-    alignItems: 'flex-end',
+    alignSelf: 'flex-end',
+    borderWidth: 1,
+    borderColor: 'yellow',
   },
   closeImage: {
     margin: 10,
