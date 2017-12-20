@@ -391,8 +391,6 @@ const styles = StyleSheet.create({
   },
   closeButtonContainer: {
     alignSelf: 'flex-end',
-    borderWidth: 1,
-    borderColor: 'yellow',
   },
   closeImage: {
     margin: 10,
