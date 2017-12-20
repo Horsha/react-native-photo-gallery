@@ -47,6 +47,7 @@ class GalleryList extends Component {
       onErrorImage,
       isImageBroken,
       onLongPressImage,
+      paddingHorizontal,
     } = this.props;
 
     return (
@@ -61,6 +62,7 @@ class GalleryList extends Component {
         onPress={this.handleOnPressImage(row)}
         onLongPress={onLongPressImage}
         onErrorImage={onErrorImage}
+        paddingHorizontal={paddingHorizontal}
       />
     );
   };
@@ -72,7 +74,9 @@ class GalleryList extends Component {
       data,
       renderItem: this.renderItem,
       keyExtractor: item => item.id,
-      contentContainerStyle: styles.container,
+      contentContainerStyle: {
+        flexDirection: horizontal ? 'row' : 'column',
+      },
       horizontal,
       ...props,
     }
@@ -92,11 +96,5 @@ class GalleryList extends Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-  },
-});
 
 export default GalleryList;
