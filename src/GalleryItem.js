@@ -13,9 +13,9 @@ class GalleryItem extends PureComponent {
     this.props.onErrorImage(event, this.props.id);
 
   renderContent = () => {
-    const { type, isSelected, allowDelete } = this.props;
+    const { type, isSelected, allowSelect, allowDelete } = this.props;
     
-    if (type === 'select') {
+    if (type === 'select' && allowSelect ) {
       return (
         <Image
           source={require('./assets/check.png')}
