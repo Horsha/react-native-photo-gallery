@@ -54,6 +54,7 @@ export default class Gallery extends Component {
     useModal: false,
     selectedImages: [],
     renderSelectorButton: this.renderSelectorButton,
+    showFullscreen: true,
     onChangeFullscreenState: () => {},
     onPressImage: () => {},
     onErrorImage: () => {},
@@ -84,6 +85,7 @@ export default class Gallery extends Component {
     imagesNotShowing: PropTypes.number,
     showGalleryList: PropTypes.bool,
     showCloseButton: PropTypes.bool,
+    showFullscreen: PropTypes.bool,
     onChangeFullscreenState: PropTypes.func,
     animated: PropTypes.bool,
     useModal: PropTypes.bool,
@@ -147,7 +149,7 @@ export default class Gallery extends Component {
 
     this.props.onPressImage(row, event);
 
-    if (!['list', 'shortcut'].includes(this.props.type)) {
+    if (!['list', 'shortcut'].includes(this.props.type) || !this.props.showFullscreen) {
       return;
     }
 
@@ -234,6 +236,10 @@ export default class Gallery extends Component {
   );
 
   renderContent = (showGalleryList, showPagination, showShortcutList) => {
+    if (!this.props.showFullscreen) {
+      return
+    }
+
     const { brokenImages } = this.state;
     const {
       type,
@@ -243,7 +249,6 @@ export default class Gallery extends Component {
       initialPaginationSize,
       showCloseButton,
       useModal,
-      ...rest,
     } = this.props;
 
     const listContainerStyle = {
