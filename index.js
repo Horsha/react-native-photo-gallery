@@ -381,6 +381,7 @@ export default class Gallery extends Component {
             animationType="fade"
             visible={shouldShowModal}
             transparent={true}
+            onRequestClose={()=>{}}
           >
             {this.renderContent(showGalleryList, showPagination, showShortcutList)}
           </Modal>
