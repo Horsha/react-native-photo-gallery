@@ -115,14 +115,26 @@ export default class Gallery extends Component {
     index,
   });
 
-  goTo = ({ index, animated = true, pressEvent = {}, ...rest }, next) =>
+  next = () => {
+    Animated.spring(this.scale, {
+      toValue: 1,
+      duration: ANIMATION_DURATION,
+    }).start(() => this.setState({ animationFinished: true }));
+
+    Animated.timing(this.pagination, {
+      toValue: 1,
+      duration: ANIMATION_DURATION - 200,
+    }).start();
+  }
+
+  goTo = ({ index, animated = true, pressEvent = {}, ...rest }) =>
     this.setState({
       ...rest,
       index,
       pressEvent,
       visible: true,
     }, () => {
-      next();
+      this.next();
 
       return setTimeout(() => this.swiper.scrollToIndex({ index, animated }), 0);
     });
@@ -171,16 +183,6 @@ export default class Gallery extends Component {
         locationX: pageX,
       },
       shouldShowModal,
-    }, () => {
-      Animated.spring(this.scale, {
-        toValue: 1,
-        duration: ANIMATION_DURATION,
-      }).start(() => this.setState({ animationFinished: true }));
-
-      Animated.timing(this.pagination, {
-        toValue: 1,
-        duration: ANIMATION_DURATION - 200,
-      }).start();
     });
 
   handleOnPressImageShortcut = (event, { row }, { isLastImage }) => {
