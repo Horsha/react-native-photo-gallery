@@ -27,14 +27,14 @@ export class Slide extends PureComponent {
 
         <PhotoView
           source={image}
-          maximumZoomScale={3}
-          minimumZoomScale={1}
+          maximumZoomScale={6}
+          minimumZoomScale={0.5}
           androidScaleType="center"
           resizeMode="contain"
           style={styles.photoViewContainer}
           onError={this.handleOnError}
+          androidScaleType="fitCenter"
         />
-
         {overlay}
       </View>
     );
