@@ -337,7 +337,7 @@ export default class Gallery extends Component {
       showCloseButton,
       useModal,
       imagesNotShowing,
-      ...rest,
+      ...rest
     } = this.props;
 
     const showGalleryList = ['list', 'select', 'delete'].includes(type);
