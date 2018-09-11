@@ -185,12 +185,12 @@ export default class Gallery extends Component {
       shouldShowModal,
     });
 
-  handleOnPressImageShortcut = (event, { row }, { isLastImage }) => {
-    if (!isLastImage) {
-      return this.handleOnPressImage(row, event);
-    }
+  handleOnPressImageShortcut = (event, { row }) => {
+    // if (!isLastImage) {
+    return this.handleOnPressImage(row, event);
+    // }
 
-    this.props.onPressLastShortcutImage(event, row);
+    // this.props.onPressLastShortcutImage(event, row);
   };
 
   closeImage = () => {
