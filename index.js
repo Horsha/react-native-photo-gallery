@@ -55,11 +55,11 @@ export default class Gallery extends Component {
     selectedImages: [],
     renderSelectorButton: this.renderSelectorButton,
     showFullscreen: true,
-    onChangeFullscreenState: () => {},
-    onPressImage: () => {},
-    onErrorImage: () => {},
-    onLongPressImage: () => {},
-    onPressLastShortcutImage: () => {},
+    onChangeFullscreenState: () => { },
+    onPressImage: () => { },
+    onErrorImage: () => { },
+    onLongPressImage: () => { },
+    onPressLastShortcutImage: () => { },
   };
 
   static propTypes = {
@@ -157,21 +157,21 @@ export default class Gallery extends Component {
   };
 
   handleOnPressImage = (row, event) => {
-    const { pageY, pageX } = event.nativeEvent;
+    // const { pageY, pageX } = event.nativeEvent;
 
     this.props.onPressImage(row, event);
 
-    if (!['list', 'shortcut'].includes(this.props.type) || !this.props.showFullscreen) {
-      return;
-    }
+    // if (!['list', 'shortcut'].includes(this.props.type) || !this.props.showFullscreen) {
+    //   return;
+    // }
 
-    this.props.onChangeFullscreenState(true);
+    // this.props.onChangeFullscreenState(true);
 
-    if (this.props.useModal) {
-      return this.handleGoToOnPressImage(row, { pageY, pageX }, true);
-    }
+    // if (this.props.useModal) {
+    //   return this.handleGoToOnPressImage(row, { pageY, pageX }, true);
+    // }
 
-    return this.handleGoToOnPressImage(row, { pageY, pageX });
+    // return this.handleGoToOnPressImage(row, { pageY, pageX });
   };
 
   handleGoToOnPressImage = ({ index }, { pageY, pageX }, shouldShowModal = false) =>
@@ -203,16 +203,16 @@ export default class Gallery extends Component {
           swiperLoaded: false,
         }), ANIMATION_DURATION / 3);
     }
-    
+
     Animated.timing(this.scale, {
       toValue: 0,
       duration: ANIMATION_DURATION / 2,
     }).start(),
 
-    Animated.timing(this.pagination, {
-      toValue: 0,
-      duration: ANIMATION_DURATION / 2,
-    }).start();
+      Animated.timing(this.pagination, {
+        toValue: 0,
+        duration: ANIMATION_DURATION / 2,
+      }).start();
   };
 
   handleOnErrorImage = (event, id) => {
@@ -373,7 +373,7 @@ export default class Gallery extends Component {
                 index,
               },
             }))}
-            onPressImage={this.handleOnPressImageShortcut}
+            onPressImage={this.handleOnPressImage}
             numberImagesToShow={imagesNotShowing}
           />
         )}
@@ -383,7 +383,7 @@ export default class Gallery extends Component {
             animationType="fade"
             visible={shouldShowModal}
             transparent={true}
-            onRequestClose={()=>{}}
+            onRequestClose={() => { }}
           >
             {this.renderContent(showGalleryList, showPagination, showShortcutList)}
           </Modal>
